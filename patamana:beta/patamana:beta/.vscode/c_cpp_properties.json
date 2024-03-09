@@ -1,0 +1,22 @@
+{
+    "configurations": [
+        {
+            "name": "Mac",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "/Users/carbon_hero/Library/Arduino15/**",
+                "/Users/carbon_hero/Documents/Arduino/libraries/**",
+                "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/IOKit.framework/Versions/A/Headers/usb"
+            ],
+            "defines": [],
+            "macFrameworkPath": [
+                "/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks"
+            ],
+            "compilerPath": "/usr/bin/clang",
+            "cStandard": "c17",
+            "cppStandard": "c++17",
+            "intelliSenseMode": "macos-clang-arm64"
+        }
+    ],
+    "version": 4
+}
