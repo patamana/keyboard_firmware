@@ -74,6 +74,8 @@ void setup() {
     digitalWrite(CK, HIGH);
     // OLEDのセットアップ
     setup_oled();
+    // key_stateの初期化
+    init_key_state();
 }
 
 // setup()実行後、loop()の実行が繰り返される
@@ -81,6 +83,13 @@ void loop() {
     get_keys_from_SR();
     count_pressed();
     judge_key_state();
+}
+
+// key_stateの初期化
+void init_key_state(){
+    for (int key_num = 0; key_num < NUM_KEYS; key_num++) {
+        key_state[key_num] = RELEASED;
+    }
 }
 
 // シフトレジスタからキーを読み取る
@@ -101,14 +110,10 @@ void get_keys_from_SR() {
 // チャタリング用のカウントをする
 void count_pressed() {
     for (int key_num = 0; key_num < NUM_KEYS; key_num++) {
-        if (temp_key_state[key_num] == PRESSED) {
-            if (pressed_counts[key_num] < MAX_COUNT) {
-                pressed_counts[key_num]++;
-            }
-        } else {
-            if (pressed_counts[key_num] > 0) {
-                pressed_counts[key_num]--;
-            }
+        if (temp_key_state[key_num] == PRESSED && pressed_counts[key_num] < MAX_COUNT) {
+            pressed_counts[key_num]++;
+        } else if (temp_key_state[key_num] == RELEASED && pressed_counts[key_num] > 0) {
+            pressed_counts[key_num]--;
         }
     }
 }
@@ -116,16 +121,12 @@ void count_pressed() {
 // 最終的なキーの状態を判断する
 void judge_key_state() {
     for (int key_num = 0; key_num < NUM_KEYS; key_num++) {
-        if (key_state[key_num] == RELEASED) {
-            if (pressed_counts[key_num] == MAX_COUNT) {
-                key_state[key_num] = PRESSED;
-                printCLI(key_num); printCLI("\n");
-                Serial.println(key_num);
-            }
-        } else {
-            if (pressed_counts[key_num] == 0) {
-                key_state[key_num] = RELEASED;
-            }
+        if (key_state[key_num] == RELEASED && pressed_counts[key_num] == MAX_COUNT) {
+            key_state[key_num] = PRESSED;
+            printCLI(key_num); printCLI("\n");
+            Serial.println(key_num);
+        } else if (key_state[key_num] == PRESSED && pressed_counts[key_num] == 0) {
+            key_state[key_num] = RELEASED;
         }
     }
 }
