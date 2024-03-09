@@ -6,7 +6,7 @@
 #include <LovyanGFX.hpp>
 
 // チャタリング調整
-#define MAX_COUNT 12
+#define MAX_COUNT 7
 
 // キー数の設定
 #define NUM_KEYS 32
