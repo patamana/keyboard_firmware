@@ -10,6 +10,7 @@ left_phisical_layout や right_phisical_layout に、continuity check ファー�
 left_keymap や right_keymap でキーマップを設定してください。<br>
 KEY_LEFT_SHIFT や KEY_RETURN といったマクロは [USBHIDKeyboard.h](https://github.com/espressif/arduino-esp32/blob/master/libraries/USB/src/USBHIDKeyboard.h) で定義されています。機能は [Keyboard Modifiers and Special Keys](https://www.arduino.cc/reference/en/language/functions/usb/keyboard/keyboardmodifiers/) を参照してください。
 
+---
 以下の Arduino Core を使用しています。<br>
 [arduino-esp32](https://github.com/espressif/arduino-esp32)
 
