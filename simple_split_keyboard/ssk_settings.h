@@ -36,16 +36,16 @@ uint8_t right_keymap[NUM_KEYS] = {                   '6', '7', '8', '9', '0', '-
                                 KEY_RIGHT_CTRL, KEY_RETURN, KEY_RIGHT_GUI       };
 
 char left_keymap_display[NUM_KEYS][4] = {   "`",  "1", "2", "3", "4", "5",
-                                            "Es", "q", "w", "e", "r", "t", "[",
-                                            "Tb", "a", "s", "d", "f", "g", "↑",
+                                            "ES", "q", "w", "e", "r", "t", "[",
+                                            "TB", "a", "s", "d", "f", "g", "↑",
                                             "\\", "z", "x", "c", "v", "b", "↓",
-                                                                     "Sh", " ", "Op"    };
+                                                                     "SH", "SP", "OP"    };
 
 char right_keymap_display[NUM_KEYS][4] =  {           "6", "7", "8", "9", "0", "-",
                                                 "]",  "y", "u", "i", "o", "p", "=",
                                                 "←", "h", "j", "k", "l", ";", "\'",
                                                 "→", "n", "m", ",", ".", "/", "BS",
-                                          "Ct", "Re", "Cm"                              };
+                                          "CT", "RE", "CM"                              };
 
 // Active Low / High の設定
 #define PRESSED LOW
@@ -166,5 +166,11 @@ public:
         setPanel(&_panel_instance); // 使用するパネルをセット
     }
 };
+
+#define MAX_ALL_KEYS_RELEASED_COUNT 10000
+
+// 左右通信のコード設定
+#define CODE_RELEASED 0x40
+#define CODE_ALL_KEYS_RELEASED 0x80
 
 #endif
