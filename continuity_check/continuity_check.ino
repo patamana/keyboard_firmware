@@ -4,6 +4,7 @@
     キーを押したのに番号が表示されない場合は導通していません。
 */
 #include <LovyanGFX.hpp>
+#include <WiFi.h>
 
 // チャタリング調整
 #define MAX_COUNT 7
@@ -74,6 +75,10 @@ void setup() {
     digitalWrite(CK, HIGH);
     // OLEDのセットアップ
     setup_oled();
+    // Wi-FiのMACアドレスの表示
+    printCLI("MAC_Wi-Fi: ");
+    printCLI(WiFi.macAddress());
+    printCLI("\n");
     // key_stateの初期化
     init_key_state();
 }
@@ -86,7 +91,7 @@ void loop() {
 }
 
 // key_stateの初期化
-void init_key_state(){
+void init_key_state() {
     for (int key_num = 0; key_num < NUM_KEYS; key_num++) {
         key_state[key_num] = RELEASED;
     }
@@ -123,7 +128,8 @@ void judge_key_state() {
     for (int key_num = 0; key_num < NUM_KEYS; key_num++) {
         if (key_state[key_num] == RELEASED && pressed_counts[key_num] == MAX_COUNT) {
             key_state[key_num] = PRESSED;
-            printCLI(key_num); printCLI("\n");
+            printCLI(key_num);
+            printCLI("\n");
             Serial.println(key_num);
         } else if (key_state[key_num] == PRESSED && pressed_counts[key_num] == 0) {
             key_state[key_num] = RELEASED;
@@ -180,5 +186,10 @@ void printCLI(const uint8_t text) {
 void printCLI(const int num) {
     char text[11];
     sprintf(text, "%d", num);
+    printCLI(text);
+}
+void printCLI(String string) {
+    char text[string.length() + 1];
+    string.toCharArray(text, string.length() + 1);
     printCLI(text);
 }
