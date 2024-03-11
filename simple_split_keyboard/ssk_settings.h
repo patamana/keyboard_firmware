@@ -27,25 +27,25 @@ uint8_t left_keymap[NUM_KEYS] = {   '`',     '1', '2', '3', '4', '5',
                                     KEY_ESC, 'q', 'w', 'e', 'r', 't', '[',
                                     KEY_TAB, 'a', 's', 'd', 'f', 'g', KEY_UP_ARROW,
                                     '\\',    'z', 'x', 'c', 'v', 'b', KEY_DOWN_ARROW,
-                                                KEY_LEFT_SHIFT, ' ', KEY_LEFT_ALT};
+                                                KEY_LEFT_GUI, ' ', KEY_LEFT_CTRL};
 
 uint8_t right_keymap[NUM_KEYS] = {                   '6', '7', '8', '9', '0', '-',
                                     ']',             'y', 'u', 'i', 'o', 'p', '=',
                                     KEY_LEFT_ARROW,  'h', 'j', 'k', 'l', ';', '\'',
                                     KEY_RIGHT_ARROW, 'n', 'm', ',', '.', '/', KEY_BACKSPACE,
-                                KEY_RIGHT_CTRL, KEY_RETURN, KEY_RIGHT_GUI       };
+                                KEY_RIGHT_ALT, KEY_RETURN, KEY_RIGHT_SHIFT       };
 
 char left_keymap_display[NUM_KEYS][4] = {   "`",  "1", "2", "3", "4", "5",
                                             "ES", "q", "w", "e", "r", "t", "[",
                                             "TB", "a", "s", "d", "f", "g", "↑",
                                             "\\", "z", "x", "c", "v", "b", "↓",
-                                                                     "SH", "SP", "OP"    };
+                                                                     "CM", "SP", "CT"    };
 
 char right_keymap_display[NUM_KEYS][4] =  {           "6", "7", "8", "9", "0", "-",
                                                 "]",  "y", "u", "i", "o", "p", "=",
                                                 "←", "h", "j", "k", "l", ";", "\'",
                                                 "→", "n", "m", ",", ".", "/", "BS",
-                                          "CT", "RE", "CM"                              };
+                                          "OP", "RE", "SH"                              };
 
 // Active Low / High の設定
 #define PRESSED LOW
