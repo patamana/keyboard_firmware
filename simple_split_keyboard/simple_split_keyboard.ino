@@ -10,6 +10,8 @@ char pressed_counts[NUM_KEYS];
 char temp_key_state[NUM_KEYS];
 char opposite_key_state[NUM_KEYS];
 
+bool is_all_opposite_keys_released = true;
+
 void setup() {
     Serial1.setRxBufferSize(256);
     Serial1.setTxBufferSize(256);
@@ -120,6 +122,7 @@ void judge_key_state() {
                 keyboard.press(right_keymap[key_num]);
             }
             Serial1.write(key_num);
+            delay(1);
         } else if (key_state[key_num] == PRESSED && pressed_counts[key_num] == 0) {
             key_state[key_num] = RELEASED;
             if (THIS_SIDE == LEFT) {
@@ -128,6 +131,25 @@ void judge_key_state() {
                 keyboard.release(right_keymap[key_num]);
             }
             Serial1.write(key_num + CODE_RELEASED);
+            delay(1);
+        }
+    }
+}
+
+void transmit_all_keys_released() {
+    static int all_keys_released_count = 0;
+    for (int key_num = 0; key_num < NUM_KEYS; key_num++) {
+        if (key_state[key_num] == PRESSED) {
+            return;
+        }
+    }
+    all_keys_released_count++;
+    if (all_keys_released_count >= MAX_ALL_KEYS_RELEASED_COUNT) {
+        all_keys_released_count = 0;
+        Serial1.write(CODE_ALL_KEYS_RELEASED);
+        if (is_all_opposite_keys_released == true){
+            keyboard.releaseAll();
+            delay(1);
         }
     }
 }
@@ -150,11 +172,13 @@ void receive_code() {
 
 void receive_pressed(int code){
     opposite_key_state[code] = PRESSED;
+    is_all_opposite_keys_released = false;
     if (THIS_SIDE == LEFT) {
         keyboard.press(right_keymap[code]);
     } else {
         keyboard.press(left_keymap[code]);
     }
+    delay(1);
 }
 
 void receive_released(int code){
@@ -165,9 +189,11 @@ void receive_released(int code){
     } else {
         keyboard.release(left_keymap[code]);
     }
+    delay(1);
 }
 
 void receive_all_keys_released(){
+    is_all_opposite_keys_released = true;
     for (int key_num = 0; key_num < NUM_KEYS; key_num++) {
         if (opposite_key_state[key_num] == PRESSED) {
             opposite_key_state[key_num] = RELEASED;
@@ -176,6 +202,7 @@ void receive_all_keys_released(){
             } else {
                 keyboard.release(left_keymap[key_num]);
             }
+            delay(1);
         }
     }
 }
@@ -183,20 +210,6 @@ void receive_all_keys_released(){
 void flush_RX() {
     while (Serial1.available()) {
         Serial1.read();
-    }
-}
-
-void transmit_all_keys_released(){
-    static int all_keys_released_count = 0;
-    for (int key_num = 0; key_num < NUM_KEYS; key_num++){
-        if (key_state[key_num] == PRESSED){
-            return;
-        }
-    }
-    all_keys_released_count++;
-    if (all_keys_released_count >= MAX_ALL_KEYS_RELEASED_COUNT){
-        all_keys_released_count = 0;
-        Serial1.write(CODE_ALL_KEYS_RELEASED);
     }
 }
 
