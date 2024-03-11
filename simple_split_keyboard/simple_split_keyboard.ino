@@ -20,12 +20,14 @@ void setup() {
     pinMode(QH, INPUT);
     digitalWrite(LD, HIGH);
     digitalWrite(CK, HIGH);
-
+    
     setup_oled();
 
     init_key_state();
     arrenge_keymap();
-    
+
+    display_keymap();
+
     keyboard.begin();
     USB.begin();
 }
@@ -34,12 +36,25 @@ void loop() {
     get_keys_from_SR();
     count_pressed();
     judge_key_state();
+    transmit_all_keys_released();
     receive_code();
+}
+
+// OLEDのセットアップ
+void setup_oled() {
+    display.init();            // 初期化
+    display.setBrightness(64); // 明るさ 0~255
+    display.setColorDepth(1);  // 階調bit数
+    display.setCursor(0, 0);
+    display.fillScreen(TFT_BLACK);
+    display.setTextColor(TFT_WHITE, TFT_BLACK); // 文字色と背景色の設定
+    display.setFont(FONT);                      // フォント設定
 }
 
 void init_key_state() {
     for (int key_num = 0; key_num < NUM_KEYS; key_num++) {
         key_state[key_num] = RELEASED;
+        opposite_key_state[key_num] = RELEASED;
     }
 }
 
@@ -54,6 +69,19 @@ void arrenge_keymap(){
     for (int key_num = 0; key_num < NUM_KEYS; key_num++) {
         left_keymap[key_num] = temp_left_keymap[key_num];
         right_keymap[key_num] = temp_right_keymap[key_num];
+    }
+}
+
+// OLEDにキーマップを表示
+void display_keymap() {
+    display.fillScreen(TFT_BLACK);
+    display.setTextColor(TFT_WHITE, TFT_BLACK); // 文字色と背景色の設定
+    for (int key_num = 0; key_num < NUM_KEYS; key_num++) {
+        if (THIS_SIDE == LEFT) {
+            display.drawString(left_keymap_display[key_num], left_display_pos[key_num].x, left_display_pos[key_num].y);
+        } else {
+            display.drawString(right_keymap_display[key_num], right_display_pos[key_num].x, right_display_pos[key_num].y);
+        }
     }
 }
 
@@ -99,7 +127,7 @@ void judge_key_state() {
             } else {
                 keyboard.release(right_keymap[key_num]);
             }
-            Serial1.write(key_num + 0x80);
+            Serial1.write(key_num + CODE_RELEASED);
         }
     }
 }
@@ -108,36 +136,108 @@ void receive_code() {
     int code = 0;
     while (Serial1.available()) {
         code = Serial1.read();
-        if(code < 0x80){
-            if (THIS_SIDE == LEFT) {
-                keyboard.press(right_keymap[code]);
-            } else {
-                keyboard.press(left_keymap[code]);
-            }
+        if(code < CODE_RELEASED){
+            receive_pressed(code);
+        } else if (code < CODE_ALL_KEYS_RELEASED) {
+            receive_released(code);
+        } else if (code == CODE_ALL_KEYS_RELEASED) {
+            receive_all_keys_released();
         } else {
-            if (THIS_SIDE == LEFT) {
-                keyboard.release(right_keymap[code - 0x80]);
-            } else {
-                keyboard.release(left_keymap[code - 0x80]);
-            }
+            flush_RX();
         }
     }
 }
 
-// OLEDのセットアップ
-void setup_oled() {
-    display.init();            // 初期化
-    display.setBrightness(64); // 明るさ 0~255
-    display.setColorDepth(1);  // 階調bit数
-    display.setCursor(0, 0);
-    display.setTextColor(TFT_WHITE, TFT_BLACK); // 文字色と背景色の設定
-    display.setFont(FONT);                      // フォント設定
+void receive_pressed(int code){
+    opposite_key_state[code] = PRESSED;
+    if (THIS_SIDE == LEFT) {
+        keyboard.press(right_keymap[code]);
+    } else {
+        keyboard.press(left_keymap[code]);
+    }
+}
+
+void receive_released(int code){
+    code -= CODE_RELEASED;
+    opposite_key_state[code] = RELEASED;
+    if (THIS_SIDE == LEFT) {
+        keyboard.release(right_keymap[code]);
+    } else {
+        keyboard.release(left_keymap[code]);
+    }
+}
+
+void receive_all_keys_released(){
     for (int key_num = 0; key_num < NUM_KEYS; key_num++) {
-        if(THIS_SIDE == LEFT){
-            display.drawString(left_keymap_display[key_num], left_display_pos[key_num].x, left_display_pos[key_num].y);
-        } else {
-            display.drawString(right_keymap_display[key_num], right_display_pos[key_num].x, right_display_pos[key_num].y);
+        if (opposite_key_state[key_num] == PRESSED) {
+            opposite_key_state[key_num] = RELEASED;
+            if (THIS_SIDE == LEFT) {
+                keyboard.release(right_keymap[key_num]);
+            } else {
+                keyboard.release(left_keymap[key_num]);
+            }
         }
     }
 }
 
+void flush_RX() {
+    while (Serial1.available()) {
+        Serial1.read();
+    }
+}
+
+void transmit_all_keys_released(){
+    static int all_keys_released_count = 0;
+    for (int key_num = 0; key_num < NUM_KEYS; key_num++){
+        if (key_state[key_num] == PRESSED){
+            return;
+        }
+    }
+    all_keys_released_count++;
+    if (all_keys_released_count >= MAX_ALL_KEYS_RELEASED_COUNT){
+        all_keys_released_count = 0;
+        Serial1.write(CODE_ALL_KEYS_RELEASED);
+    }
+}
+
+// コマンドライン表示
+void printCLI(const char *text) {
+    int i = 0;
+    while (text[i] != '\0') {
+        int right_margin = display.width() - display.getCursorX();
+        if (right_margin < FONT_WIDTH && text[i] != '\n') {
+            display.print("\n");
+        }
+        int bottom_margin = display.height() - display.getCursorY();
+        if (bottom_margin < FONT_HIGHT) {
+            display.scroll(0, bottom_margin - FONT_HIGHT);
+            display.setCursor(0, display.height() - FONT_HIGHT);
+        }
+        display.print(text[i]);
+        i++;
+    }
+}
+void printCLI(const uint8_t *text) {
+    int i = 0;
+    while (text[i] != '\0') {
+        printCLI(text[i]);
+        i++;
+    }
+}
+void printCLI(const uint8_t text) {
+    int right_margin = display.width() - display.getCursorX();
+    if (right_margin < FONT_WIDTH && text != '\n') {
+        display.print("\n");
+    }
+    int bottom_margin = display.height() - display.getCursorY();
+    if (bottom_margin < FONT_HIGHT) {
+        display.scroll(0, bottom_margin - FONT_HIGHT);
+        display.setCursor(0, display.height() - FONT_HIGHT);
+    }
+    display.print(text);
+}
+void printCLI(const int num) {
+    char text[11];
+    sprintf(text, "%d", num);
+    printCLI(text);
+}
