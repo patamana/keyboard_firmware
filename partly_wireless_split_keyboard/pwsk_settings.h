@@ -1,5 +1,5 @@
-#ifndef ssk_settings_h
-#define ssk_settings_h
+#ifndef pwsk_settings_h
+#define pwsk_settings_h
 
 #define USE_NIMBLE
 #include <USBHIDKeyboard.h>
