@@ -2,7 +2,7 @@
 端末との接続は無線、左右の接続は有線の部分的無線接続分割キーボードです。
 
 ## ライブラリの変更点
-ESP32-BLE-Keyboard.hに変更が必要です。
+※ライブラリのコードに変更が必要です。
 
 BleKeyboard.cpp の pSecurity->setAuthenticationMode(ESP_LE_AUTH_REQ_SC_MITM_BOND); を pSecurity->setAuthenticationMode(ESP_LE_AUTH_BOND); に変更してください。
 
