@@ -3,7 +3,7 @@
 #define THIS_SIDE RIGHT
 
 USBHIDKeyboard keyboard;
-LGFX_SSD1306 display;
+SSD1306_I2C display;
 
 char key_state[NUM_KEYS];
 char pressed_counts[NUM_KEYS];
@@ -80,9 +80,9 @@ void display_keymap() {
     display.setTextColor(TFT_WHITE, TFT_BLACK); // 文字色と背景色の設定
     for (int key_num = 0; key_num < NUM_KEYS; key_num++) {
         if (THIS_SIDE == LEFT) {
-            display.drawString(left_keymap_display[key_num], left_display_pos[key_num].x, left_display_pos[key_num].y);
+            display.drawString(left_keymap_display[key_num], left_key_disp_pos[key_num].x, left_key_disp_pos[key_num].y);
         } else {
-            display.drawString(right_keymap_display[key_num], right_display_pos[key_num].x, right_display_pos[key_num].y);
+            display.drawString(right_keymap_display[key_num], right_key_disp_pos[key_num].x, right_key_disp_pos[key_num].y);
         }
     }
 }

@@ -9,7 +9,7 @@ BleKeyboard.cpp の pSecurity->setAuthenticationMode(ESP_LE_AUTH_REQ_SC_MITM_BON
 キーマクロを統一するため、
 BleKeyboard.h の const uint8_t をコメントアウトして、USBHIDKeyboard.h を include してください。
 
-BleKeyboard.h および BleKeyboard.cpp のKeyReport を BLEKeyReport に変更してください。
+BleKeyboard.h および BleKeyboard.cpp の KeyReport を BLEKeyReport に変更してください。
 
 ## キーマップの変更方法
 pwsk_settins.h で物理レイアウトやキーマップの設定を行います。
