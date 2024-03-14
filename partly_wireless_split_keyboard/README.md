@@ -12,7 +12,7 @@ BleKeyboard.h の const uint8_t をコメントアウトして、USBHIDKeyboard.
 BleKeyboard.h および BleKeyboard.cpp の KeyReport を BLEKeyReport に変更してください。
 
 ## キーマップの変更方法
-pwsk_settins.h で物理レイアウトやキーマップの設定を行います。
+pwsk_settings.cpp で物理レイアウトやキーマップの設定を行います。
 
 left_phisical_layout や right_phisical_layout に、continuity_check ファームウェアを書き込んだ状態でキーを押した時にOLEDに表示される番号を入れてください。物理的な配線の設定をします。
 
