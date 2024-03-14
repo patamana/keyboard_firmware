@@ -4,7 +4,7 @@
 
 BleKeyboard bleKeyboard("パタマナ"); // デバイスの名前
 
-LGFX_SSD1306 display;
+SSD1306_I2C display;
 
 char key_state[NUM_KEYS];
 char pressed_counts[NUM_KEYS];
@@ -17,11 +17,11 @@ void setup() {
     Serial1.setTxBufferSize(256);
     Serial1.begin(115200, SERIAL_8N1, RX, TX);
 
-    pinMode(LD, OUTPUT);
-    pinMode(CK, OUTPUT);
-    pinMode(QH, INPUT);
-    digitalWrite(LD, HIGH);
-    digitalWrite(CK, HIGH);
+    pinMode(SR_LD, OUTPUT);
+    pinMode(SR_CK, OUTPUT);
+    pinMode(SR_QH, INPUT);
+    digitalWrite(SR_LD, HIGH);
+    digitalWrite(SR_CK, HIGH);
     
     setup_oled();
 
@@ -82,9 +82,9 @@ void display_keymap() {
     display.setTextColor(TFT_WHITE, TFT_BLACK); // 文字色と背景色の設定
     for (int key_num = 0; key_num < NUM_KEYS; key_num++) {
         if (THIS_SIDE == LEFT) {
-            display.drawString(left_keymap_display[key_num], left_display_pos[key_num].x, left_display_pos[key_num].y);
+            display.drawString(left_keymap_display[key_num], left_key_disp_pos[key_num].x, left_key_disp_pos[key_num].y);
         } else {
-            display.drawString(right_keymap_display[key_num], right_display_pos[key_num].x, right_display_pos[key_num].y);
+            display.drawString(right_keymap_display[key_num], right_key_disp_pos[key_num].x, right_key_disp_pos[key_num].y);
         }
     }
 }
@@ -92,13 +92,13 @@ void display_keymap() {
 // シフトレジスタからキーを読み取る
 void get_keys_from_SR() {
     int key_num = 0;
-    digitalWrite(LD, LOW);                       // LDがLOWのときシフトレジスタにロード
-    digitalWrite(LD, HIGH);                      // ロード待機
-    temp_key_state[key_num++] = digitalRead(QH); // 最初の信号がすでにQHにでている
+    digitalWrite(SR_LD, LOW);                       // LDがLOWのときシフトレジスタにロード
+    digitalWrite(SR_LD, HIGH);                      // ロード待機
+    temp_key_state[key_num++] = digitalRead(SR_QH); // 最初の信号がすでにQHにでている
     while (key_num < NUM_KEYS) {
-        digitalWrite(CK, LOW);
-        digitalWrite(CK, HIGH); // クロックの立ち上がりでデータがシフトされる
-        temp_key_state[key_num++] = digitalRead(QH);
+        digitalWrite(SR_CK, LOW);
+        digitalWrite(SR_CK, HIGH); // クロックの立ち上がりでデータがシフトされる
+        temp_key_state[key_num++] = digitalRead(SR_QH);
     }
 }
 
