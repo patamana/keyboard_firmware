@@ -17,9 +17,9 @@
 #define RELEASED HIGH
 
 // シフトレジスタの制御pinの設定
-#define LD D1
-#define CK D2
-#define QH D3
+#define SR_LD D1
+#define SR_CK D2
+#define SR_QH D3
 
 #define LEFT 0
 #define RIGHT 1

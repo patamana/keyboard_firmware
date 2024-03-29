@@ -17,11 +17,11 @@ void setup() {
     Serial1.setTxBufferSize(256);
     Serial1.begin(115200, SERIAL_8N1, RX, TX);
 
-    pinMode(LD, OUTPUT);
-    pinMode(CK, OUTPUT);
-    pinMode(QH, INPUT);
-    digitalWrite(LD, HIGH);
-    digitalWrite(CK, HIGH);
+    pinMode(SR_LD, OUTPUT);
+    pinMode(SR_CK, OUTPUT);
+    pinMode(SR_QH, INPUT);
+    digitalWrite(SR_LD, HIGH);
+    digitalWrite(SR_CK, HIGH);
     
     setup_oled();
 
@@ -90,13 +90,13 @@ void display_keymap() {
 // シフトレジスタからキーを読み取る
 void get_keys_from_SR() {
     int key_num = 0;
-    digitalWrite(LD, LOW);                       // LDがLOWのときシフトレジスタにロード
-    digitalWrite(LD, HIGH);                      // ロード待機
-    temp_key_state[key_num++] = digitalRead(QH); // 最初の信号がすでにQHにでている
+    digitalWrite(SR_LD, LOW);                       // LDがLOWのときシフトレジスタにロード
+    digitalWrite(SR_LD, HIGH);                      // ロード待機
+    temp_key_state[key_num++] = digitalRead(SR_QH); // 最初の信号がすでにQHにでている
     while (key_num < NUM_KEYS) {
-        digitalWrite(CK, LOW);
-        digitalWrite(CK, HIGH); // クロックの立ち上がりでデータがシフトされる
-        temp_key_state[key_num++] = digitalRead(QH);
+        digitalWrite(SR_CK, LOW);
+        digitalWrite(SR_CK, HIGH); // クロックの立ち上がりでデータがシフトされる
+        temp_key_state[key_num++] = digitalRead(SR_QH);
     }
 }
 

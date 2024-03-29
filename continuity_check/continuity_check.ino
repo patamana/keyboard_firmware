@@ -31,8 +31,8 @@ public:
         {
             auto cfg = _bus_instance.config();      // バス設定用の構造体を取得
             cfg.i2c_port = 0;                       // 使用するI2Cポートを選択 (0 or 1)
-            cfg.freq_write = 800000;                // 送信時のクロック
-            cfg.freq_read = 800000;                 // 受信時のクロック
+            cfg.freq_write = 400000;                // 送信時のクロック
+            cfg.freq_read = 400000;                 // 受信時のクロック
             cfg.pin_sda = SDA;                      // SDAを接続しているピン番号
             cfg.pin_scl = SCL;                      // SCLを接続しているピン番号
             cfg.i2c_addr = 0x3C;                    // I2Cデバイスのアドレス
@@ -76,9 +76,10 @@ void setup() {
     // OLEDのセットアップ
     setup_oled();
     // Wi-FiのMACアドレスの表示
-    printCLI("MAC_Wi-Fi: ");
-    printCLI(WiFi.macAddress());
-    printCLI("\n");
+    printCLI("MAC-Wi-Fi:")
+    printCLI(WiFi.macAddress()); printCLI("\n");
+    Serial.println(WiFi.macAddress());
+    printCLI("Continuity check started");
     // key_stateの初期化
     init_key_state();
 }
